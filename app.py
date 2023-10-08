@@ -2,8 +2,11 @@ import os
 import openai
 import json
 import requests
+
 from fastapi import FastAPI, UploadFile
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -13,6 +16,21 @@ openai.organization = os.getenv("OPEN_AI_ORG")
 elevenlabs_key = os.getenv("ELEVENLABS_KEY")
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:5174",
+    "http://localhost:5173",
+    "http://localhost:8000",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -25,13 +43,24 @@ async def post_audio(file: UploadFile):
     user_message = transcribe_audio(file)
     chat_response = get_chat_response(user_message)
     audio_output = text_to_speech(chat_response)
+
     def iterfile():
         yield audio_output
-
+ 
     return StreamingResponse(iterfile(), media_type="application/octet-stream")
 
 
+@app.get("/clear")
+async def clear_history():
+    file = 'database.json'
+    open(file, 'w')
+    return {"message": "Chat history has been cleared"}
+
+
 def transcribe_audio(file):
+    # Save the blob first
+    with open(file.filename, 'wb') as buffer:
+        buffer.write(file.file.read())
     audio_file = open(file.filename, "rb")
     transcript = openai.Audio.translate("whisper-1", audio_file)
     # transcript = {"role": "user", "content": "Who won the world series in 2020?"}
