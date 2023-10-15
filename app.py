@@ -46,7 +46,7 @@ async def post_audio(file: UploadFile):
 
     def iterfile():
         yield audio_output
- 
+
     return StreamingResponse(iterfile(), media_type="application/octet-stream")
 
 
@@ -71,7 +71,7 @@ def transcribe_audio(file):
 def save_messages(user_messages, gpt_response):
     file = 'database.json'
     messages = load_messages()
-    messages.append({"role": "user", "content": user_messages})
+    messages.append({"role": "user", "content": user_messages['text']})
     messages.append({"role": "assistant", "content": gpt_response})
 
     with open(file, 'w') as f:
