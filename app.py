@@ -111,7 +111,13 @@ def load_messages():
                 messages.append(item)
     else:
         messages.append({"role": "system",
-                         "content": "You are interviewing the user for a business analyst position for the sales department of Bosch. Ask short questions that are relevant for a junior analyst. Your name is Chris. The user is Bora. Keep responses under 50 words and be funny sometimes."
+                         "content": "You are interviewing the user for a position at company"
+                                    "First ask that user's name and the position he/she is applying."
+                                    "Then start the interview by asking questions about that position."
+                                    "Keep the answers within 100 words."
+                                    "Always end your talk with a question directed to the candidate."
+                                    "You can finish asking question and thank to the user after 10 questions."
+                                    "After the interview, explain your decision to the candidate"
                          })
 
     return messages
