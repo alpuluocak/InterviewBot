@@ -22,7 +22,7 @@ origins = [
     "http://localhost:5173",
     "http://localhost:8000",
     "http://localhost:3000",
-    "https://interview-knh59xmoy-alp-uluocaks-projects.vercel.app"
+    "https://interview-11f05ps9m-alp-uluocaks-projects.vercel.app"
 ]
 
 app.add_middleware(
