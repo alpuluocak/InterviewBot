@@ -3,11 +3,28 @@ import openai
 import json
 import requests
 
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, Request, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from dotenv import load_dotenv
+
+import redis.asyncio as redis
+import uvicorn
+from contextlib import asynccontextmanager
+from fastapi import Depends, FastAPI
+
+from fastapi_limiter import FastAPILimiter
+from fastapi_limiter.depends import RateLimiter
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    redis_connection = redis.from_url("redis://localhost:6379", encoding="utf8")
+    await FastAPILimiter.init(redis_connection)
+    yield
+    await FastAPILimiter.close()
+
 
 load_dotenv()
 
@@ -15,7 +32,7 @@ openai.api_key = os.getenv("OPEN_AI_KEY")
 openai.organization = os.getenv("OPEN_AI_ORG")
 elevenlabs_key = os.getenv("ELEVENLABS_KEY")
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 origins = [
     "http://localhost:5174",
@@ -34,12 +51,26 @@ app.add_middleware(
 )
 
 
+class CustomRateLimiter(RateLimiter):
+    async def __call__(self, request: Request):
+        response = await super().__call__(request)
+        if response.status_code == 429:
+            raise HTTPException(
+                status_code=429, detail="Too many requests. Try again later."
+            )
+        return response
+
+
+async def custom_dependency():
+    return CustomRateLimiter(times=3, seconds=600)
+
+
 @app.get("/")
 async def root():
     return {"message": "Let's start"}
 
 
-@app.post("/talk")
+@app.post("/talk", dependencies=[Depends(custom_dependency)])
 async def post_audio(file: UploadFile):
     user_message = transcribe_audio(file)
     chat_response = get_chat_response(user_message)
