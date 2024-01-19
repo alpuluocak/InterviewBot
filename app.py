@@ -105,6 +105,9 @@ def save_messages(user_messages, gpt_response):
     messages.append({"role": "user", "content": user_messages['text']})
     messages.append({"role": "assistant", "content": gpt_response})
 
+    if len(gpt_response) > 200:
+        raise KeyError('Uzun cevap verdin.')
+
     timestamp = datetime.datetime.today().timestamp()
 
     desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
@@ -124,7 +127,8 @@ def get_chat_response(user_messages):
     # Send to openAI
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
-        messages=messages
+        messages=messages,
+        max_tokens=250
     )
 
     parsed_gpt_response = response['choices'][0]['message']['content']
@@ -149,7 +153,7 @@ def load_messages():
                 messages.append(item)
     else:
         messages.append({"role": "system",
-                         "content": "You are interviewing the user for a position at company. First ask user's name and the position he/she is applying and wait for reply. Ask short questions that are relevant for that position. Always end your talk with a question directed to the candidate. Keep your questions under 50 words. After the interview, explain your decision to the candidate"
+                         "content": "You are interviewing the user for a position at company. First ask user's name and the position he/she is applying and wait for reply. Ask short questions that are relevant for that position. Never use more than 20 words. After the interview, explain your decision to the candidate"
                          })
 
     return messages
