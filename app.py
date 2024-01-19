@@ -2,6 +2,7 @@ import os
 import openai
 import json
 import requests
+import datetime
 
 from fastapi import FastAPI, UploadFile, Request, HTTPException
 from fastapi.responses import StreamingResponse
@@ -10,7 +11,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 import redis.asyncio as redis
-import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI
 
@@ -95,7 +95,6 @@ def transcribe_audio(file):
         buffer.write(file.file.read())
     audio_file = open(file.filename, "rb")
     transcript = openai.Audio.translate("whisper-1", audio_file)
-    # transcript = {"role": "user", "content": "Who won the world series in 2020?"}
     print(transcript)
     return transcript
 
@@ -106,7 +105,15 @@ def save_messages(user_messages, gpt_response):
     messages.append({"role": "user", "content": user_messages['text']})
     messages.append({"role": "assistant", "content": gpt_response})
 
+    timestamp = datetime.datetime.today().timestamp()
+
+    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+    file_path = os.path.join(desktop_path, f"database_{timestamp}.json")
+
     with open(file, 'w') as f:
+        json.dump(messages, f)
+
+    with open(file_path, 'w') as f:
         json.dump(messages, f)
 
 
@@ -142,7 +149,7 @@ def load_messages():
                 messages.append(item)
     else:
         messages.append({"role": "system",
-                         "content": "You are interviewing the user for a position at company. First ask that user's name and the position he/she is applying and wait for reply. Then start the interview by asking questions about that position. Wait for the reply after every question. Keep the your answers within 100 words. Always end your talk with a question directed to the candidate. You can finish asking question and thank to the user after receiving 10 reply. After the interview, explain your decision to the candidate"
+                         "content": "You are interviewing the user for a position at company. First ask user's name and the position he/she is applying and wait for reply. Ask short questions that are relevant for that position. Always end your talk with a question directed to the candidate. Keep your questions under 50 words. After the interview, explain your decision to the candidate"
                          })
 
     return messages
