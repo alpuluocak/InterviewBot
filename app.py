@@ -7,23 +7,23 @@ import datetime
 from fastapi import FastAPI, UploadFile, Request, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 from dotenv import load_dotenv
 
-import redis.asyncio as redis
-from contextlib import asynccontextmanager
+# import redis.asyncio as redis
+# from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI
 
-from fastapi_limiter import FastAPILimiter
+# from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
 
-
-@asynccontextmanager
-async def lifespan(_: FastAPI):
-    redis_connection = redis.from_url("redis://localhost:6379", encoding="utf8")
-    await FastAPILimiter.init(redis_connection)
-    yield
-    await FastAPILimiter.close()
+# @asynccontextmanager
+# async def lifespan(_: FastAPI):
+#     redis_connection = redis.from_url("redis://localhost:6379", encoding="utf8")
+#     await FastAPILimiter.init(redis_connection)
+#     yield
+#     await FastAPILimiter.close()
 
 
 load_dotenv()
@@ -32,18 +32,18 @@ openai.api_key = os.getenv("OPEN_AI_KEY")
 openai.organization = os.getenv("OPEN_AI_ORG")
 elevenlabs_key = os.getenv("ELEVENLABS_KEY")
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 origins = [
-    "http://localhost:5174",
-    "http://localhost:5173",
-    "http://localhost:8000",
-    "http://localhost:3000",
-    "https://interview-11f05ps9m-alp-uluocaks-projects.vercel.app"
+    "https://localhost:5174",
+    "https://localhost:5173",
+    "https://localhost:8000",
+    "https://localhost:3000",
+    "https://interview-bot-front-an97g9k5m-alp-uluocaks-projects.vercel.app"
 ]
 
 app.add_middleware(
-    CORSMiddleware,
+    HTTPSRedirectMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
@@ -62,12 +62,12 @@ class CustomRateLimiter(RateLimiter):
 
 
 async def custom_dependency():
-    return CustomRateLimiter(times=3, seconds=600)
+    return CustomRateLimiter(times=5, seconds=240)
 
 
 @app.get("/")
 async def root():
-    return {"message": "Let's start"}
+    return {"message": "You are in the root directory."}
 
 
 @app.post("/talk", dependencies=[Depends(custom_dependency)])
@@ -110,8 +110,8 @@ def save_messages(user_messages, gpt_response):
 
     timestamp = datetime.datetime.today().timestamp()
 
-    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-    file_path = os.path.join(desktop_path, f"database_{timestamp}.json")
+    desktop_path = os.path.join(os.path.expanduser("~"), "/home/ec2-user")
+    file_path = os.path.join(desktop_path, f"bot_data/database_{timestamp}.json")
 
     with open(file, 'w') as f:
         json.dump(messages, f)
