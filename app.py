@@ -3,8 +3,10 @@ import openai
 import json
 import requests
 import datetime
+import ssl
 
 from fastapi import FastAPI, UploadFile, Request, HTTPException
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
@@ -34,16 +36,20 @@ elevenlabs_key = os.getenv("ELEVENLABS_KEY")
 
 app = FastAPI()
 
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ssl_context.load_cert_chain('cert.pem', keyfile='key.pem')
+
 origins = [
     "https://localhost:5174",
     "https://localhost:5173",
     "https://localhost:8000",
     "https://localhost:3000",
-    "https://interview-bot-front-an97g9k5m-alp-uluocaks-projects.vercel.app"
+    "https://interview-bot-front-56ny04ckl-alp-uluocaks-projects.vercel.app",
+    "https://www.alpsinterviewbot.com"
 ]
 
 app.add_middleware(
-    HTTPSRedirectMiddleware,
+    CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
