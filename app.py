@@ -33,15 +33,10 @@ app = FastAPI()
 # ssl_context.load_cert_chain('cert.pem', keyfile='key.pem')
 
 origins = [
-    "https://localhost:5174",
     "http://localhost:5173",
     "http://localhost:8000",
-    "https://localhost:3000",
     "http://16.171.32.70:8000",
-    "https://interview-bot-front-56ny04ckl-alp-uluocaks-projects.vercel.app",
-    "https://interview-bot-front-pc6cbgmz8-alp-uluocaks-projects.vercel.app",
-    "https://interview-bot-front-end.vercel.app",
-    "https://www.alpsinterviewbot.com",
+    "http://www.alpsinterviewbot.com",
     "http://alps-interview-bot.com",
     "http://www.alps-interview-bot.com"
 ]
