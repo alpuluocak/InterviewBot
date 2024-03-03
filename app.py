@@ -33,13 +33,13 @@ app = FastAPI()
 # ssl_context.load_cert_chain('cert.pem', keyfile='key.pem')
 
 origins = [
-    "http://localhost:5173",
-    "http://localhost:8000",
-    "http://16.171.32.70:8000",
-    "http://16.171.32.70:8000/talk",
-    "http://www.alpsinterviewbot.com",
-    "http://alps-interview-bot.com",
-    "http://www.alps-interview-bot.com"
+    "https://localhost:5173",
+    "https://localhost:8000",
+    "https://16.171.32.70:8000",
+    "https://16.171.32.70:8000/talk",
+    "https://www.alpsinterviewbot.com",
+    "https://alps-interview-bot.com",
+    "https://www.alps-interview-bot.com"
 ]
 
 app.add_middleware(
