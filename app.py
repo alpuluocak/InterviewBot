@@ -3,21 +3,14 @@ import openai
 import json
 import requests
 import datetime
-import ssl
 
 from fastapi import FastAPI, UploadFile, Request, HTTPException
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 from dotenv import load_dotenv
-
-# import redis.asyncio as redis
-# from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI
 
-# from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
 
 # @asynccontextmanager
@@ -36,16 +29,21 @@ elevenlabs_key = os.getenv("ELEVENLABS_KEY")
 
 app = FastAPI()
 
-ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-ssl_context.load_cert_chain('cert.pem', keyfile='key.pem')
+# ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+# ssl_context.load_cert_chain('cert.pem', keyfile='key.pem')
 
 origins = [
     "https://localhost:5174",
     "https://localhost:5173",
     "https://localhost:8000",
     "https://localhost:3000",
+    "https://51.20.32.239:8000",
     "https://interview-bot-front-56ny04ckl-alp-uluocaks-projects.vercel.app",
-    "https://www.alpsinterviewbot.com"
+    "https://interview-bot-front-pc6cbgmz8-alp-uluocaks-projects.vercel.app",
+    "https://interview-bot-front-end.vercel.app",
+    "https://www.alpsinterviewbot.com",
+    "https://alps-interview-bot.com",
+    "https://www.alps-interview-bot.com"
 ]
 
 app.add_middleware(
@@ -122,8 +120,8 @@ def save_messages(user_messages, gpt_response):
     with open(file, 'w') as f:
         json.dump(messages, f)
 
-    with open(file_path, 'w') as f:
-        json.dump(messages, f)
+    # with open(file_path, 'w') as f:
+    #     json.dump(messages, f)
 
 
 def get_chat_response(user_messages):
