@@ -36,6 +36,7 @@ origins = [
     "http://localhost:5173",
     "http://localhost:8000",
     "http://16.171.32.70:8000",
+    "http://16.171.32.70:8000/talk",
     "http://www.alpsinterviewbot.com",
     "http://alps-interview-bot.com",
     "http://www.alps-interview-bot.com"
