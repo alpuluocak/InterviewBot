@@ -42,8 +42,8 @@ origins = [
     "https://interview-bot-front-pc6cbgmz8-alp-uluocaks-projects.vercel.app",
     "https://interview-bot-front-end.vercel.app",
     "https://www.alpsinterviewbot.com",
-    "https://alps-interview-bot.com",
-    "https://www.alps-interview-bot.com"
+    "http://alps-interview-bot.com",
+    "http://www.alps-interview-bot.com"
 ]
 
 app.add_middleware(
