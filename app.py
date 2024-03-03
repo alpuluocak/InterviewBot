@@ -37,7 +37,7 @@ origins = [
     "https://localhost:5173",
     "https://localhost:8000",
     "https://localhost:3000",
-    "https://51.20.32.239:8000",
+    "https://16.171.32.70:8000",
     "https://interview-bot-front-56ny04ckl-alp-uluocaks-projects.vercel.app",
     "https://interview-bot-front-pc6cbgmz8-alp-uluocaks-projects.vercel.app",
     "https://interview-bot-front-end.vercel.app",
